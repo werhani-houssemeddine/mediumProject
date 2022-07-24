@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { handleError } = require('vue');
 
 // import dotenv file 
 require('dotenv').config();
 // local files
-const userRoutes = require('./src/routes/index');
+const {userRoutes, userSession} = require('./src/routes/index');
 const connectMongo = require('./db/mongo');
 const session = require('./lib/session');
 
@@ -27,5 +26,6 @@ connectMongo(process.env.MONGO_URI);
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 apiRouter.use('/users', userRoutes);
+apiRouter.use('/login', userSession);
 
 app.listen(PORT, () => console.log(`Listenning on port ${PORT}`));
