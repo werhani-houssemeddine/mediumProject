@@ -1,5 +1,6 @@
 const routes = require('express').Router();
 const bcrypt = require('bcryptjs');
+const {parseError, sessionizeUser} = require('../util/helpers');
 
 const { signUp } = require('../validations/user');
 const User = require('./../models/users');
@@ -29,11 +30,15 @@ routes.post('', async (req, res) => {
         const hashPassword = await bcrypt.hash(password, 10);
 
         //the user is save in the database successfully!
-        await User.create({username, password: hashPassword, email});
+        const newUser = await User.create({username, password: hashPassword, email});
+        const sessionUser = sessionizeUser(newUser);
+        req.session.user = sessionUser;
+        
+        console.log(sessionUser);
         res.send('Everything is good, enjoy in our website!');
     }catch(err){
         res.status(400);
-        res.send(err.message);
+        res.send(parseError(err));
     }
 });
 
